@@ -83,7 +83,20 @@ class character:
             win.blit(self.walkright[self.moveCount//20], (self.x, self.y))
         elif self.isMove and self.faceRight == -1:
             win.blit(self.walkleft[self.moveCount//20], (self.x, self.y))
+        
+    def wLeft(self):
+        pass
 
+    def wRight(self):
+        pass
+
+    def iLeft(self):
+        pass
+
+    def iRight(self):
+        pass
+
+    
 
 class bullet:
     def __init__(self, x, y, direction, vel, rad):
@@ -147,12 +160,13 @@ class checkPoint:
         self.timer = 0
         self.opened = False
         self.number = -1
+        self.saved = False
 
     def save(self):
         data = []
         data.append(str(self.level)+"\n")
         data.append(str(MC.x)+"\n")
-        data.append(str(MC.x)+"\n")
+        data.append(str(MC.y)+"\n")
         with open("savefile.txt", "w") as f:
             f.writelines(data)
 
@@ -160,6 +174,9 @@ class checkPoint:
         win.blit(self.image[0], (self.x, self.y))
 
     def animation(self):
+        if not self.saved:
+            self.save()
+            self.saved = True
         if self.timer < 129:
             self.timer += 1
         else:
