@@ -12,7 +12,7 @@ bulletTime = 0
 
 # Classes
 class character:
-    def __init__(self, x, y, width, height, vel, jumpCount, id, walkleft, walkright, idleleft, idleright, damage):
+    def __init__(self, x, y, width, height, vel, jumpCount, id, walkleft, walkright, idleleft, idleright, blockleft,blockright):
         self.width = width
         self.height = height
         self.vel = vel
@@ -25,27 +25,32 @@ class character:
         self.id = id
         self.hitbox = (self.x + 20, self.y, 40, 60)
         self.isMove = False
-        self.moveCount = 0
         self.idleleft = idleleft
         self.idleright = idleright
         self.walkleft = walkleft
         self.walkright = walkright
-        self.damage = damage
-        self.level = 0
+        self.blockleft = blockleft
+        self.blockright = blockright
 
+        self.wLeftCount = 0
+        self.wRightCount = 0
+        self.iLeftCount = 0
+        self.iRightCount = 0
+        self.bLeftCount = 0
+        self.bRightCount = 0
 
     def playerMove(self):
         keys = pygame.key.get_pressed()
         if self.id == 0:
             if keys[pygame.K_LEFT] and self.x > self.vel:
-                if self.faceRight == 1:
-                    self.moveCount = 0
+                self.iRightCount = 0
+                self.wRightCount = 0
                 self.x -= self.vel
                 self.faceRight = -1
                 self.isMove = True
             if keys[pygame.K_RIGHT] and self.x < winwidth - self.width:
-                if self.faceRight == -1:
-                    self.moveCount = 0
+                self.iLeftCount = 0
+                self.wLeftCount = 0
                 self.x += self.vel
                 self.faceRight = 1
                 self.isMove = True
@@ -71,32 +76,32 @@ class character:
 
     def draw(self):
         self.hitbox = (self.x, self.y, 40, 60)
-        if self.moveCount < 79:
-            self.moveCount += 1
-        else:
-            self.moveCount = 0
-        if not self.isMove and self.faceRight == 1:
-            win.blit(self.idleright[self.moveCount//20], (self.x, self.y))
-        elif not self.isMove and self.faceRight == -1:
-            win.blit(self.idleleft[self.moveCount//20], (self.x, self.y))
-        elif self.isMove and self.faceRight == 1:
-            win.blit(self.walkright[self.moveCount//20], (self.x, self.y))
-        elif self.isMove and self.faceRight == -1:
-            win.blit(self.walkleft[self.moveCount//20], (self.x, self.y))
         
+        
+    # w = walk, i = idle, b = block
     def wLeft(self):
-        pass
+        self.wLeftCount += 1
+        win.blit(self.walkleft[(self.wLeftCount//10)%10],(self.x,self.y))
 
     def wRight(self):
-        pass
+        self.wRightCount += 1
+        win.blit(self.walkright[(self.wRightCount//10)%10],(self.x,self.y))
 
     def iLeft(self):
-        pass
+        self.iLeftCount += 1
+        win.blit(self.idleleft[(self.iLeftCount//20)%4],(self.x,self.y))
 
     def iRight(self):
+        self.iRightCount += 1
+        win.blit(self.idleright[(self.iRightCount//20)%4],(self.x,self.y))
+
+    def bLeft(self):
+        self.bLeftCount += 1
+        
+
+    def bRight(self):
         pass
 
-    
 
 class bullet:
     def __init__(self, x, y, direction, vel, rad):
@@ -284,9 +289,9 @@ for x in range(1, 5):
     idleLeft.append(pygame.image.load("idleLeft/"+str(x)+".png"))
 for x in range(1, 5):
     idleRight.append(pygame.image.load("idleRight/"+str(x)+".png"))
-for x in range(1, 5):
+for x in range(1, 11):
     walkRight.append(pygame.image.load("walkingRight/"+str(x)+".png"))
-for x in range(1, 5):
+for x in range(1, 11):
     walkLeft.append(pygame.image.load("walkingLeft/"+str(x)+".png"))
 for x in range(1, 14):
     temp = (pygame.image.load("CP1/"+str(x)+".png"))
