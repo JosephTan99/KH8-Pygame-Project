@@ -31,7 +31,7 @@ class character:
         self.walkright = walkright
         self.blockleft = blockleft
         self.blockright = blockright
-
+        self.block = False
         self.wLeftCount = 0
         self.wRightCount = 0
         self.iLeftCount = 0
@@ -43,17 +43,23 @@ class character:
         keys = pygame.key.get_pressed()
         if self.id == 0:
             if keys[pygame.K_LEFT] and self.x > self.vel:
+                self.block = False
                 self.iRightCount = 0
                 self.wRightCount = 0
                 self.x -= self.vel
                 self.faceRight = -1
                 self.isMove = True
             if keys[pygame.K_RIGHT] and self.x < winwidth - self.width:
+                self.block = False
                 self.iLeftCount = 0
                 self.wLeftCount = 0
                 self.x += self.vel
                 self.faceRight = 1
                 self.isMove = True
+            if keys[pygame.K_b] and not self.isMove:
+                self.block = True
+                self.bLeftCount = 0
+                self.bRightCount = 0
             if not self.isJump:
                 if keys[pygame.K_SPACE]:
                     self.jumpCount = self.constJump
@@ -74,18 +80,17 @@ class character:
         print('hit')
         pass
 
-    def draw(self):
-        self.hitbox = (self.x, self.y, 40, 60)
+    
         
         
     # w = walk, i = idle, b = block
     def wLeft(self):
         self.wLeftCount += 1
-        win.blit(self.walkleft[(self.wLeftCount//10)%10],(self.x,self.y))
+        win.blit(self.walkleft[(self.wLeftCount//10)%9],(self.x,self.y))
 
     def wRight(self):
         self.wRightCount += 1
-        win.blit(self.walkright[(self.wRightCount//10)%10],(self.x,self.y))
+        win.blit(self.walkright[(self.wRightCount//10)%9],(self.x,self.y))
 
     def iLeft(self):
         self.iLeftCount += 1
@@ -97,10 +102,36 @@ class character:
 
     def bLeft(self):
         self.bLeftCount += 1
-        
+        if (self.bLeftCount//10) <= 3:
+            win.blit(self.blockleft[(self.bLeftCount//10)%4],(self.x,self.y))
+        else:
+            win.blit(self.blockleft[3],(self.x,self.y))
 
     def bRight(self):
-        pass
+        self.bRightCount += 1
+        if (self.bRightCount//10) <= 3:
+            win.blit(self.blockright[(self.bRightCount//10)%4],(self.x,self.y))
+        else:
+            win.blit(self.blockright[3],(self.x,self.y))
+            
+    def draw(self):
+        self.hitbox = (self.x, self.y, 40, 60)
+        if self.faceRight == 1:
+            if self.isMove:
+                self.wRight()
+            elif self.block:
+                self.bRight()
+            else:
+                self.iRight()
+        elif self.faceRight == -1:
+            if self.isMove:
+                self.wLeft()
+            elif self.block:
+                self.bLeft()
+            else:
+                self.iLeft()
+
+
 
 
 class bullet:
@@ -284,22 +315,28 @@ idleLeft = []
 idleRight = []
 walkLeft = []
 walkRight = []
+blockleft = []
+blockright = []
 CP1 = []
 for x in range(1, 5):
     idleLeft.append(pygame.image.load("idleLeft/"+str(x)+".png"))
 for x in range(1, 5):
     idleRight.append(pygame.image.load("idleRight/"+str(x)+".png"))
-for x in range(1, 11):
+for x in range(1, 10):
     walkRight.append(pygame.image.load("walkingRight/"+str(x)+".png"))
-for x in range(1, 11):
+for x in range(1, 10):
     walkLeft.append(pygame.image.load("walkingLeft/"+str(x)+".png"))
 for x in range(1, 14):
     temp = (pygame.image.load("CP1/"+str(x)+".png"))
     CP1.append(pygame.transform.rotozoom(temp, 0, 2))
+for x in range(1,5):
+    blockleft.append(pygame.image.load("blockLeft/"+str(x)+".png"))
+for x in range(1,5):
+    blockright.append(pygame.image.load("blockRight/"+str(x)+".png"))
 
 # Creating Objects
 MC = character(startx, starty, playerWidth, playerHeight, 2, 14,
-               0, walkLeft, walkRight, idleLeft, idleRight, 2)
+               0, walkLeft, walkRight, idleLeft, idleRight, blockleft,blockright)
 health = pygame.image.load("healthbar.png")
 small = pygame.transform.rotozoom(health, 0, 0.3)
 hb = healthBar(small)
