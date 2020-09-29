@@ -12,7 +12,7 @@ bulletTime = 0
 
 # Classes
 class character:
-    def __init__(self, x, y, width, height, vel, jumpCount, id, walkleft, walkright, idleleft, idleright, blockleft,blockright):
+    def __init__(self, x, y, width, height, vel, jumpCount, id, walkleft, walkright, idleleft, idleright, blockleft, blockright):
         self.width = width
         self.height = height
         self.vel = vel
@@ -80,40 +80,40 @@ class character:
         print('hit')
         pass
 
-    
-        
-        
     # w = walk, i = idle, b = block
+
     def wLeft(self):
         self.wLeftCount += 1
-        win.blit(self.walkleft[(self.wLeftCount//10)%9],(self.x,self.y))
+        win.blit(self.walkleft[(self.wLeftCount//10) % 9], (self.x, self.y))
 
     def wRight(self):
         self.wRightCount += 1
-        win.blit(self.walkright[(self.wRightCount//10)%9],(self.x,self.y))
+        win.blit(self.walkright[(self.wRightCount//10) % 9], (self.x, self.y))
 
     def iLeft(self):
         self.iLeftCount += 1
-        win.blit(self.idleleft[(self.iLeftCount//20)%4],(self.x,self.y))
+        win.blit(self.idleleft[(self.iLeftCount//20) % 4], (self.x, self.y))
 
     def iRight(self):
         self.iRightCount += 1
-        win.blit(self.idleright[(self.iRightCount//20)%4],(self.x,self.y))
+        win.blit(self.idleright[(self.iRightCount//20) % 4], (self.x, self.y))
 
     def bLeft(self):
         self.bLeftCount += 1
         if (self.bLeftCount//10) <= 3:
-            win.blit(self.blockleft[(self.bLeftCount//10)%4],(self.x,self.y))
+            win.blit(self.blockleft[(self.bLeftCount//10) %
+                                    4], (self.x, self.y))
         else:
-            win.blit(self.blockleft[3],(self.x,self.y))
+            win.blit(self.blockleft[3], (self.x, self.y))
 
     def bRight(self):
         self.bRightCount += 1
         if (self.bRightCount//10) <= 3:
-            win.blit(self.blockright[(self.bRightCount//10)%4],(self.x,self.y))
+            win.blit(
+                self.blockright[(self.bRightCount//10) % 4], (self.x, self.y))
         else:
-            win.blit(self.blockright[3],(self.x,self.y))
-            
+            win.blit(self.blockright[3], (self.x, self.y))
+
     def draw(self):
         self.hitbox = (self.x, self.y, 40, 60)
         if self.faceRight == 1:
@@ -132,8 +132,6 @@ class character:
                 self.iLeft()
 
 
-
-
 class bullet:
     def __init__(self, x, y, direction, vel, rad):
         self.direction = direction
@@ -141,6 +139,8 @@ class bullet:
         self.x = x
         self.y = y
         self.rad = rad
+        self.isMove = False
+        self.hide = True
 
     def update(self):
         if self.x < winwidth and self.x > 0:
@@ -148,8 +148,18 @@ class bullet:
             return True
         return False
 
+    def check(self):
+        if not self.hide:
+            if not self.update():
+                self.hide = True
+
     def draw(self):
-        pygame.draw.circle(win, (255, 255, 255), (self.x, self.y), self.rad)
+        self.check()
+        if not self.hide:
+            pygame.draw.circle(win, (255, 255, 255),
+                               (self.x, self.y), self.rad)
+
+    
 
 
 class platform:
@@ -160,6 +170,8 @@ class platform:
         self.image = image
         self.tileSize = playerWidth
 
+    def checkBullet(self):
+        pass
     def draw(self):
         for i in range(self.width):
             pygame.draw.rect(
@@ -329,27 +341,29 @@ for x in range(1, 10):
 for x in range(1, 14):
     temp = (pygame.image.load("CP1/"+str(x)+".png"))
     CP1.append(pygame.transform.rotozoom(temp, 0, 2))
-for x in range(1,5):
+for x in range(1, 5):
     blockleft.append(pygame.image.load("blockLeft/"+str(x)+".png"))
-for x in range(1,5):
+for x in range(1, 5):
     blockright.append(pygame.image.load("blockRight/"+str(x)+".png"))
 
 # Creating Objects
 MC = character(startx, starty, playerWidth, playerHeight, 2, 14,
-               0, walkLeft, walkRight, idleLeft, idleRight, blockleft,blockright)
+               0, walkLeft, walkRight, idleLeft, idleRight, blockleft, blockright)
+b1 = bullet(0,0,0,12,4)
 health = pygame.image.load("healthbar.png")
 small = pygame.transform.rotozoom(health, 0, 0.3)
 hb = healthBar(small)
 test = platform(700, winheight-100, 5, "abc")
 check1 = checkPoint(920, 380, 80, 120, CP1, 1)
-Ttile1 = platform(500,350,3,1)
-Ttile2 = platform(0,100,4,1)
-Ttile3 = platform(0,140,4,1)
-Ttile4 = platform(250,200,3,1)
+Ttile1 = platform(500, 350, 3, 1)
+Ttile2 = platform(0, 100, 4, 1)
+Ttile3 = platform(0, 140, 4, 1)
+Ttile4 = platform(250, 200, 3, 1)
 # Defining Functions
 
+
 def tutorial1():
-    win.fill((0,0,0))
+    win.fill((0, 0, 0))
     Ttile1.draw()
     Ttile2.draw()
     Ttile3.draw()
@@ -357,12 +371,11 @@ def tutorial1():
     MC.draw()
     pygame.display.update()
 
+
 def draw():
     win.fill((0, 0, 0))
-
     hb.draw()
-    for x in bullets:
-        x.draw()
+    b1.draw()
     test.draw()
     if check1.onAnimation:
         check1.animation()
@@ -371,13 +384,12 @@ def draw():
             check1.draw()
         else:
             check1.blinkblink()
-    
+
     MC.draw()
     pygame.display.update()
 
 
 # mainloop
-bullets = []
 while run:
     # DON'T CHANGE THIS
     # START
@@ -387,22 +399,16 @@ while run:
         if event.type == pygame.QUIT:
             run = False
     # END
-    for x in bullets:
-        if x.y - x.rad > MC.hitbox[1] and x.y + x.rad < MC.hitbox[1] + MC.hitbox[3]:
-            if x.x - x.rad > MC.hitbox[0] + MC.hitbox[2] and x.x + x.rad < MC.hitbox[0]:
-                MC.hit()
-                bullets.pop(bullets.index(x))
-
-        if not x.update():
-            bullets.pop(bullets.index(x))
 
     MC.playerMove()
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]:
         break
-    if keys[pygame.K_x] and len(bullets) < 1:
-        bullets.append(bullet(round(MC.x+MC.width//2),
-                              round(MC.y+MC.height//2), MC.faceRight, 12, 4))
+    if keys[pygame.K_x] and b1.hide:
+        b1.x = MC.x+MC.width//2
+        b1.y = MC.y+MC.height//2
+        b1.direction = MC.faceRight
+        b1.hide = False
     check1.check()
 
     draw()
